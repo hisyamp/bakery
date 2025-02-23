@@ -5,24 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class Cutoff extends Model
 {
     use HasFactory;
-    protected $table = 'items';
+    protected $table = 'cutoff';
     protected $guard = [];
     protected $timestamp = true;
     protected $primaryKey = 'id';
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'id',
-        'name',
-        'category',
-        'price',
-        'is_active',
-        'branch_id',
+        'cutoff_name',
+        'start_date',
+        'end_date',
+        'status',
+        'type_log_id',
+        'notes',
         'created_at',
-        'created_by',
-        'updated_at',
-        'deleted_at',
+        'closed_by',
+        'closed_at',
+        'is_active',
     ];
     
 }

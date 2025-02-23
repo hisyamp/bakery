@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Item;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use Illuminate\Support\Facades\Auth;
@@ -18,28 +20,27 @@ class ItemController extends Controller
     public function index()
     {
         $role = Auth::user()->role_id;
-        return view('item.item',compact('role'));
-    }
+        $categories = Category::all();
+        $branch = Branch::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return view('item.item',compact('role','categories','branch'));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|exists:categories,id',
+            'branch_id' => 'required|exists:branchs,id',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $item = Item::create($validated);
+
+        return response()->json(["status"=>'success',"message"=> 'Item created successfully.']);
     }
 
     /**
@@ -85,12 +86,21 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Item::findOrFail($id);
+        $item->deleted_at = now();
+        $item->save();
+        return response()->json(['message' => 'Item deleted successfully.']);
+
     }
 
     public function api_item()
     {
-        $data = Item::all();
+        $data = Item::select('items.id','items.name', 'items.price', 'categories.name as category')
+            ->whereNull('items.deleted_at')
+            ->leftJoin('categories', 'items.category', '=', 'categories.id')
+            ->get();
+
         return DataTables::of($data)->make(true);
     }
+
 }

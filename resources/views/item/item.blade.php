@@ -53,16 +53,40 @@
                     <div class="d-flex flex-column fv-row mb-2">
                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                             <span>Kategori</span>
+                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Cabang"></i>
                         </label>
-                        <input type="text" class="form-control form-control-solid" id="category" name="category" />
+                        <!--end::Label-->
+                        <select class="form-select form-select-solid drdn" id="category" name="category" data-control="select2" data-hide-search="true" data-placeholder="Kategori">
+                            <option value="">Pilih </option>
+                            @foreach($categories as $c)
+                                <option value="{{$c->id}}">{{$c->name}} </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="d-flex flex-column fv-row mb-2">
                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                             <span>Cabang</span>
+                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Cabang"></i>
                         </label>
-                        <input type="text" class="form-control form-control-solid" id="branch" name="branch" />
+                        <!--end::Label-->
+                        <select class="form-select form-select-solid drdn" id="branch_id" name="branch_id" data-control="select2" data-hide-search="true" data-placeholder="Cabang">
+                            <option value="">Pilih </option>
+                            @foreach($branch as $c)
+                                <option value="{{$c->id}}">{{$c->name}} </option>
+                            @endforeach
+                        </select>
                     </div>
+
+                    <div class="d-flex flex-column fv-row mb-2">
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            <span>Harga</span>
+                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Harga"></i>
+                        </label>
+                        <!--end::Label-->
+                        <input type="number" class="form-control form-control-solid" id="price" name="price" />
+                    </div>
+
 
                     <div class="text-center pt-15">
                         <button type="submit" class="btn btn-primary" id="save-btn">Save</button>
@@ -111,8 +135,11 @@ $(document).ready(function () {
         $('#modal-title').text('Create Item');
         $('#form-item')[0].reset();
         $('#modal-detail').modal('show');
+        $('.drdn').trigger('change')
+        
+    });
 
-        $('#save-btn').off('click').on('click', function(e) {
+    $('#save-btn').off('click').on('click', function(e) {
             e.preventDefault();
             $.ajax({
                 url: '{{ url("item") }}',
@@ -128,7 +155,6 @@ $(document).ready(function () {
                 }
             });
         });
-    });
 
     // Handle detail button click
     $('body').on('click', '.btn-detail', function() {
@@ -138,9 +164,12 @@ $(document).ready(function () {
             url: `{{ url('item/${dataid}') }}`,
             type: "GET",
             success: function(response) {
+                console.log(response)
                 $('#name').val(response.name);
-                $('#category').val(response.category);
-                $('#branch').val(response.branch);
+                $('#category').val(response.category).trigger('change');;
+                $('#branch_id').val(response.branch_id).trigger('change');;
+                $('#price').val(response.price);
+
                 $("#modal-detail").modal('show');
             },
             error: function(xhr) {

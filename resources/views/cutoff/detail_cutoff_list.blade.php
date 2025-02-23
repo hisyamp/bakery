@@ -3,11 +3,6 @@
 @section('content')
 <div class="card p-5">
 
-<div class="row">
-    <div class="col-md-3">
-        <a href="{{'addlogitem'}}" class="btn btn-dark mb-3" id="btn-create">Buat Pencatatan</a>
-    </div>
-</div>
     <div class="row">
 
     <!--begin::Col-->
@@ -15,7 +10,7 @@
         
         <!--end::Label-->
         <select class="form-select form-select-solid drdn" id="filter_log" name="filter_log" data-control="select2" data-hide-search="true" data-placeholder="Tipe Pencatatan" name="filter_log">
-            <!-- <option value="">Pilih Tipe Pencatatan...</option> -->
+            <option value="">Pilih Tipe Pencatatan...</option>
             @foreach ($log_types as $log_type)
                 <option value="{{ $log_type->id }}">{{ $log_type->name }}</option>
             @endforeach
@@ -28,16 +23,15 @@
         <input type="date" class="form-control form-control-solid" placeholder="Tanggal" name="tanggal_filter" id="tanggal_filter"/>
     </div>
     <div class="card-body card-scroll">
-        <!--begin::Col-->
-        <div class="col-md-6 fv-row">
-            <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                <span>Tanggal</span>
-                <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Tanggal"></i>
-            </label>
-            <!--end::Label-->
-            <input type="text" class="form-control form-control-solid" placeholder="Select Date Range" name="dateRangePicker" id="dateRangePicker"/>
-        </div>
-    </div>
+    <!--begin::Col-->
+        <!-- <div class="col-md-6 fv-row">
+                <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                    <span>Tanggal</span>
+                    <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Tanggal"></i>
+                </label>
+                <input type="text" class="form-control form-control-solid" placeholder="Select Date Range" name="dateRangePicker" id="dateRangePicker"/>
+            </div>
+        </div> -->
     <!--end::Col-->
     <!-- Add "Create Log" Button -->
     <div class="col-md-3">
@@ -54,7 +48,7 @@
             <th>Log Type</th>
             <th>Qty</th>
             <th>Notes</th>
-            <th>Aksi</th>
+            <!-- <th>Aksi</th> -->
         </tr>
     </thead>
 </table>
@@ -148,7 +142,7 @@
         var date = new Date().toISOString().split('T')[0]
         var id_filter = $('#filter_log').val()
 
-        $('#tanggal_filter').val(date)
+        // $('#tanggal_filter').val(date)
         var table = $('#table-log').DataTable({
             processing: true,
             serverSide: true,
@@ -157,9 +151,17 @@
                 type: 'POST', // Set the request method to POST
                 data: function (d) {
                     // Always fetch the latest values
-                    d.type_log_id = $('#filter_log').val(); // Get the value from the input field
-                    d.date = $('#tanggal_filter').val(); // Get the updated date value
-                    d._token = '{{ csrf_token() }}'; // Add CSRF token
+                    var typeLogId = $('#filter_log').val();
+                    var date = $('#tanggal_filter').val();
+                    var id = '{{$id}}'; // Assuming this is a PHP variable in Blade
+                    
+                    // Add parameters only if they are not empty
+                    if (typeLogId) d.type_log_id = typeLogId;
+                    if (date) d.date = date;
+                    if (id) d.id = id;
+
+                    // CSRF token (optional if using Laravel's built-in CSRF protection)
+                    d._token = '{{ csrf_token() }}';
                 }
             },            
             dom: 'lBfrtip',
@@ -172,10 +174,9 @@
                 { data: 'log_type_name', className: 'dt-body-center' },
                 { data: 'qty', className: 'dt-body-center' },
                 { data: 'notes', className: 'dt-body-center' },
-                { render: function (data, type, row) {
-                        return `<button class="btn btn-primary btn-sm btn-detail" data-id="${row.id}">Detail</button>
-                                <button class="btn btn-danger btn-sm btn-delete" data-id="${row.id}">Delete</button>`;
-                    }, className: 'dt-body-center' }
+                // { render: function (data, type, row) {
+                //         return `<button class="btn btn-primary btn-sm btn-detail" data-id="${row.id}">Detail</button>`;
+                //     }, className: 'dt-body-center' }
             ],
         });
 

@@ -12,12 +12,16 @@ class Logitem extends Model
     protected $guard = [];
     protected $timestamp = true;
     protected $primaryKey = 'id';
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'id',
         'item_id',
         'branch_id',
         'type_log_id',
         'notes',
+        'status',
+        'qty',
+        'price',
         'list_item',
         'created_at',
         'created_by',

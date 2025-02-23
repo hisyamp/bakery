@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Item\ItemController;
 use App\Http\Controllers\Logitem\LogitemController;
+use App\Http\Controllers\Cutoff\CutoffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,10 @@ Route::post('/regis', [App\Http\Controllers\Auth\RegisterController::class,'regi
 
 Route::group(['middleware' => 'auth'], function(){
     Route::get('dashboard_admin', [App\Http\Controllers\Admin\AdminController::class,'dashboard_admin']);
+    Route::get('report', [App\Http\Controllers\Admin\AdminController::class,'report']);
+    Route::get('api_report/{datestart}/{dateend}', [App\Http\Controllers\Admin\AdminController::class,'api_report']);
+    
+
     Route::get('list_user', [App\Http\Controllers\Admin\AdminController::class,'list_user']);
     Route::get('api_user', [App\Http\Controllers\Admin\AdminController::class,'api_user']);
     Route::get('reset_password/{id}', [App\Http\Controllers\Admin\AdminController::class,'reset_password']);
@@ -48,6 +53,14 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('api_item', [App\Http\Controllers\Item\ItemController::class,'api_item']);
 
     Route::resource('logitem', LogitemController::class);
-    Route::get('api_log', [App\Http\Controllers\Logitem\LogitemController::class,'api_log']);
-    
+    Route::get('addlogitem', [LogitemController::class,'add_log_item']);
+    Route::post('api_log', [App\Http\Controllers\Logitem\LogitemController::class,'api_log']);
+
+    Route::get('cutoff', [App\Http\Controllers\Cutoff\CutoffController::class,'index']);
+    Route::get('cutoff_list', [App\Http\Controllers\Cutoff\CutoffController::class,'list']);
+    Route::get('cutoff_list/{id}', [App\Http\Controllers\Cutoff\CutoffController::class,'detail_list']);
+    Route::get('api_cutoff_list', [App\Http\Controllers\Cutoff\CutoffController::class,'api_cutoff_list']);
+    Route::get('api_cutoff', [App\Http\Controllers\Cutoff\CutoffController::class,'api_cutoff'])->name('api_cutoff');
+    Route::post('api_cutoff_detail', [App\Http\Controllers\Cutoff\CutoffController::class,'api_cutoff_detail']);
+    Route::post('cutoff', [App\Http\Controllers\Cutoff\CutoffController::class,'do_cutoff']);
 });

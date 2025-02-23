@@ -28,22 +28,27 @@
              return meta.row + meta.settings._iDisplayStart + 1;
            },
            className: 'dt-body-center',
+            defaultContent: ''
         },
         {
            data: 'username',
            className: 'dt-body-center',
+            defaultContent: ''
         },
         {
            data: 'email',
-           className: 'dt-body-center'
+           className: 'dt-body-center',
+            defaultContent: ''
         },
         {
            data: 'role',
-           className: 'dt-body-center'
+           className: 'dt-body-center',
+            defaultContent: ''
         },
         {
            data: 'no_hp',
-           className: 'dt-body-center'
+           className: 'dt-body-center',
+            defaultContent: ''
         },
         {
           "render": function ( data, type, row ) {
