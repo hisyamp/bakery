@@ -64,20 +64,35 @@ class AdminController extends Controller
         return view('admin.report',compact('role'));
     }
 
-    public function api_report($datestart,$dateend)
+    public function api_report($datestart, $dateend)
     {
         try {
-            
-            $logItems = Logitem::selectRaw('log_items.item_id, items.name as item_name, SUM(log_items.qty) as total_qty, SUM(log_items.price*qty) as total_price')
-            ->join('items', 'log_items.item_id', '=', 'items.id')
-            ->whereBetween('log_items.transaction_date', [$datestart, $dateend])
-            ->groupBy('log_items.item_id', 'items.name')
-            ->get();
-
+            $logItems = Logitem::selectRaw('
+                    log_items.item_id, 
+                    items.name as item_name, 
+                    SUM(CASE WHEN log_items.type_log_id = 2 THEN log_items.qty ELSE 0 END) as qty_waste,
+                    SUM(CASE WHEN log_items.type_log_id = 1 THEN log_items.qty ELSE 0 END) as qty_finish_good,
+                    SUM(log_items.price * log_items.qty) as total_price,
+                    CASE 
+                        WHEN SUM(CASE WHEN log_items.type_log_id = 1 THEN log_items.qty ELSE 0 END) = 0 
+                        THEN NULL 
+                        ELSE 
+                            ROUND(
+                                (SUM(CASE WHEN log_items.type_log_id = 2 THEN log_items.qty ELSE 0 END) / 
+                                SUM(CASE WHEN log_items.type_log_id = 1 THEN log_items.qty ELSE 0 END)) * 100, 2
+                            )
+                    END as total_percentage
+                ')
+                ->join('items', 'log_items.item_id', '=', 'items.id')
+                ->whereBetween('log_items.transaction_date', [$datestart, $dateend])
+                ->groupBy('log_items.item_id', 'items.name')
+                ->get();
+    
             return DataTables::of($logItems)->make(true);
         } catch (\Throwable $th) {
-            //throw $th;
+            return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-
+    
+    
 }

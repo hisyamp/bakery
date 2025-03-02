@@ -13,6 +13,19 @@
             <div id="chart" style="height: 350px;"></div>
         </div>
     </div>
+    <div class="p-4">
+        <table id="table-log" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Finishgood</th>
+                    <th>Waste</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
     <div class="card-body card-scroll h-500px">
     <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
             <!--begin::Number-->
@@ -83,6 +96,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
+    $(document).ready(function () {
         $.ajax({
             url: `{{url('api_dashboard')}}`,
             type: "GET", 
@@ -142,40 +156,61 @@
                 console.log('Error:', data);
             }
         });
-
+        var table = $('#table-log').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: `{{ url('api_report/2025-02-01/2025-02-28') }}`,
+            type: 'GET',
+        },
+        columns: [
+            { render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }, className: 'dt-body-center' },
+            { data: 'item_name', className: 'dt-body-center' },
+            { data: 'qty_finish_good', className: 'dt-body-center' },
+            { data: 'qty_waste', className: 'dt-body-center' },
+            { data: 'total_percentage', className: 'dt-body-center' }
+        ],
+    });
+    })
 </script>
 <script>
-			var countfetch = 0
-            setInterval(() => {
-                countfetch+=1
-				// console.log("countfetch",countfetch)
-				if(true)
-				{
-					$.ajax({
-						url: `{{url('ceklaporan')}}`,
-						type: "GET", 
-						success: function(response) {
-							// console.log("data detail item",response.data)
-							if(response.data > 0)
-							{
-								Swal.fire({
-									title: "Alert!",
-									text: "Ada laporan yang harus ditinjau !",
-									icon: "warning",
-									confirmButtonText: `Lihat`,
-								}).then((ok) => {
-									if (ok.value) {
-										window.location.href = "{{ route('list_logitem')}}";
-									}
-								});
-							}
-							// $('#modal-regis').modal('hide')
-						},
-						error: function(data) { 
-							console.log('Error:', data);
-						}
-					});
-				}
-            }, 60*1000);
-		</script>
+    var countfetch = 0
+    setInterval(() => {
+        countfetch+=1
+        // console.log("countfetch",countfetch)
+        if(true)
+        {
+            $.ajax({
+                url: `{{url('ceklaporan')}}`,
+                type: "GET", 
+                success: function(response) {
+                    // console.log("data detail item",response.data)
+                    if(response.data > 0)
+                    {
+                        Swal.fire({
+                            title: "Alert!",
+                            text: "Ada laporan yang harus ditinjau !",
+                            icon: "warning",
+                            confirmButtonText: `Lihat`,
+                        }).then((ok) => {
+                            if (ok.value) {
+                                window.location.href = "{{ route('list_logitem')}}";
+                            }
+                        });
+                    }
+                    // $('#modal-regis').modal('hide')
+                },
+                error: function(data) { 
+                    console.log('Error:', data);
+                }
+            });
+        }
+    }, 60*1000);
+</script>
+
+<script>
+    
+</script>
 @endsection
