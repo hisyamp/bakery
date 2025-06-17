@@ -164,6 +164,7 @@ class LogitemController extends Controller
             ->join('items', 'log_items.item_id', '=', 'items.id')
             ->join('log_types', 'log_items.type_log_id', '=', 'log_types.id')
             ->select('log_items.*', 'items.name as name', 'log_types.name as log_type_name')
+            ->whereNull('log_items.cutoff_id')
             ->whereNull('log_items.deleted_at');
 
         if($request->has('id')){

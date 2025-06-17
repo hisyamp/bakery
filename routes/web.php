@@ -27,7 +27,7 @@ Route::post('/regis', [App\Http\Controllers\Auth\RegisterController::class,'regi
 Route::group(['middleware' => 'auth'], function(){
     Route::get('dashboard_admin', [App\Http\Controllers\Admin\AdminController::class,'dashboard_admin']);
     Route::get('report', [App\Http\Controllers\Admin\AdminController::class,'report']);
-    Route::get('api_report/{datestart}/{dateend}', [App\Http\Controllers\Admin\AdminController::class,'api_report']);
+    Route::get('api_report', [App\Http\Controllers\Admin\AdminController::class,'api_report']);
     
 
     Route::get('list_user', [App\Http\Controllers\Admin\AdminController::class,'list_user']);

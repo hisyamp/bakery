@@ -33,16 +33,23 @@ class AdminController extends Controller
         $role = Auth::user()->role_id;
         return view('admin.list_item',compact('role'));
     }
+
     public function api_user()
     {
         $data = User::all();
         return DataTables::of($data)->make(true);
     }
+
     public function api_logitem()
     {
-        $data = Logitem::all();
-        return DataTables::of($data)->make(true);
+        try {
+            $data = Logitem::whereNull('cutoff_id');
+            return DataTables::of($data)->make(true);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
+
     public function reset_password($id)
     {
         try {
@@ -64,9 +71,12 @@ class AdminController extends Controller
         return view('admin.report',compact('role'));
     }
 
-    public function api_report($datestart, $dateend)
+    public function api_report(Request $request)
     {
         try {
+            $datestart = $request->input('datestart');
+            $dateend = $request->input('dateend');
+    
             $logItems = Logitem::selectRaw('
                     log_items.item_id, 
                     items.name as item_name, 
@@ -87,12 +97,13 @@ class AdminController extends Controller
                 ->whereBetween('log_items.transaction_date', [$datestart, $dateend])
                 ->groupBy('log_items.item_id', 'items.name')
                 ->get();
-    
+            return [$datestart, $dateend];
             return DataTables::of($logItems)->make(true);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+    
     
     
 }
